@@ -1,19 +1,13 @@
-import CreateCourse from "./CreateCourse";
-import UpdateCourse from "./UpdateCourse";
 import { Navigate } from "react-router-dom";
 
-//PrivateRoute handles rendering of authenticated components
+//PrivateRoute uses a method from App.js to check for
+//authentication status, and then renders the child if
+//authenticated.
 
 const PrivateRoute = (props) => {
-  if (props.user.id) {
-    if (props.action === "create") {
-      return <CreateCourse user={props.user} password={props.password} />;
-    } else if (props.action === "update") {
-      return <UpdateCourse user={props.user} password={props.password} />;
-    }
-  } else {
-    return <Navigate to="/signin" />;
-  }
+  const authed = props.auth;
+  const children = props.children;
+  return authed ? children : <Navigate to="/signin" />;
 };
 
 export default PrivateRoute;

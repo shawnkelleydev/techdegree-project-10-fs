@@ -12,8 +12,8 @@ import UserSignUp from "./UserSignUp";
 import UserSignOut from "./UserSignOut";
 import PrivateRoute from "./PrivateRoute";
 import NoRoute from "./NoRoute";
-// import CreateCourse from "./CreateCourse";
-// import UpdateCourse from "./UpdateCourse";
+import CreateCourse from "./CreateCourse";
+import UpdateCourse from "./UpdateCourse";
 
 class App extends Component {
   state = {
@@ -50,6 +50,8 @@ class App extends Component {
     }
   }
 
+  //Posts new users to the api.
+
   handleNewUser(e) {
     e.preventDefault();
     let success = false;
@@ -85,6 +87,9 @@ class App extends Component {
     return success;
   }
 
+  //gets user data from the api and provides user data / password to state
+  //the password is set seperately because the password stored in the api is
+  //hashed.
   signIn() {
     const emailField = document.querySelector("#emailAddress");
     const passwordField = document.querySelector("#password");
@@ -110,9 +115,15 @@ class App extends Component {
       });
   }
 
+  //clears everything to effect user log out
   signOut() {
     this.setState({ user: {}, password: "" });
     localStorage.clear();
+  }
+
+  //checks for authenticated user
+  isAuth() {
+    return this.state.user.id ? true : false;
   }
 
   render() {
@@ -134,21 +145,23 @@ class App extends Component {
             <Route
               path=":id/update"
               element={
-                <PrivateRoute
-                  user={this.state.user}
-                  password={this.state.password}
-                  action="update"
-                />
+                <PrivateRoute auth={this.isAuth()}>
+                  <UpdateCourse
+                    user={this.state.user}
+                    password={this.state.password}
+                  />
+                </PrivateRoute>
               }
             />
             <Route
               path="create"
               element={
-                <PrivateRoute
-                  user={this.state.user}
-                  password={this.state.password}
-                  action="create"
-                />
+                <PrivateRoute auth={this.isAuth()}>
+                  <CreateCourse
+                    user={this.state.user}
+                    password={this.state.password}
+                  />
+                </PrivateRoute>
               }
             />
           </Route>

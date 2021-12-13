@@ -1,6 +1,6 @@
-# techdegree-project-9-api
+# Techdegree Project 10 - API
 
-This is my express api project for Team Treehouse.  It receives json data and interracts with databases using Sequelize ORM.
+This is my express api project for Team Treehouse, which is integrated in project 10 with a React front end.  It receives json data and interracts with databases using Sequelize ORM.
 
 To test the project:
 

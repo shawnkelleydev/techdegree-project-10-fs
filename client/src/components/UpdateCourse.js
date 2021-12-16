@@ -29,7 +29,6 @@ const UpdateCourse = (props) => {
     //get course id form state
     const title = document.querySelector("#courseTitle").value;
     const description = e.target.querySelector("#courseDescription").value;
-    const valDiv = document.querySelector(".validation--errors");
     //set url
     const url = `http://localhost:8080/api/courses/${id}`;
     //request body
@@ -53,8 +52,6 @@ const UpdateCourse = (props) => {
         setSubmitted(true);
       })
       .catch((err) => {
-        //show validation div
-        valDiv.style.display = "block";
         //set errors in state
         setErrors(err.response.data.errors);
       });
@@ -74,12 +71,17 @@ const UpdateCourse = (props) => {
       <main>
         <div className="wrap">
           <h2>Update Course</h2>
-          <div className="validation--errors">
-            <h3>Validation Errors</h3>
-            <ul>
-              {errors ? errors.map((err, i) => <li key={i}>{err}</li>) : null}
-            </ul>
-          </div>
+          {errors ? (
+            <div className="validation--errors">
+              <h3>Validation Errors</h3>
+              <ul>
+                {errors.map((err, i) => (
+                  <li key={i}>{err}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
           <form onSubmit={(e) => handleUpdate(e)}>
             <div className="main--flex">
               <div>

@@ -12,7 +12,7 @@ class Courses extends Component {
   }
 
   getCourses() {
-    axios.get(`http://localhost:5000/api/courses`).then((res) => {
+    axios.get(`http://localhost:8080/api/courses`).then((res) => {
       this.setState({ courses: res.data });
     });
   }

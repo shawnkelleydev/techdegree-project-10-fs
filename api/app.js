@@ -284,7 +284,7 @@ app.use((err, req, res, next) => {
 //SERVER
 
 // set our port
-app.set("port", process.env.PORT || 5000);
+app.set("port", process.env.PORT || 8080);
 
 // start listening on our port
 const server = app.listen(app.get("port"), () => {

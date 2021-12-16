@@ -19,7 +19,7 @@ class CreateCourse extends Component {
       const estimatedTime = e.target.querySelector("#estimatedTime").value;
       const materialsNeeded = e.target.querySelector("#materialsNeeded").value;
       const userId = this.props.user.id;
-      const url = "http://localhost:5000/api/courses";
+      const url = "http://localhost:8080/api/courses";
       const username = this.props.user.emailAddress;
       const password = this.props.password;
       const body = {

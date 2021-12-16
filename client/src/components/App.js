@@ -37,7 +37,7 @@ class App extends Component {
         username,
         password,
       };
-      const url = "http://localhost:5000/api/users";
+      const url = "http://localhost:8080/api/users";
       axios
         .get(url, { auth })
         .then((res) => {
@@ -65,7 +65,7 @@ class App extends Component {
       emailAddress,
       password,
     };
-    const url = "http://localhost:5000/api/users";
+    const url = "http://localhost:8080/api/users";
     const valDiv = document.querySelector(".validation--errors");
     const valList = valDiv.querySelector("ul");
     valList.innerHTML = "";
@@ -102,7 +102,7 @@ class App extends Component {
     };
     emailField.value = "";
     passwordField.value = "";
-    const url = "http://localhost:5000/api/users";
+    const url = "http://localhost:8080/api/users";
     axios
       .get(url, { auth })
       .then((res) => {

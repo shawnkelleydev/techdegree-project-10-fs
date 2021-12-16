@@ -17,7 +17,7 @@ class CourseDetail extends Component {
 
   //gets all courses and isolates current course data
   getCourses() {
-    axios.get(`http://localhost:5000/api/courses`).then((res) => {
+    axios.get(`http://localhost:8080/api/courses`).then((res) => {
       this.setState({ courses: res.data });
       let courseId = window.location.href.split("/").splice(-1);
       courseId = parseInt(courseId);
@@ -37,7 +37,7 @@ class CourseDetail extends Component {
     };
     if (this.state.course.userId === this.props.user.id) {
       const id = this.state.course.id;
-      const url = `http://localhost:5000/api/courses/${id}`;
+      const url = `http://localhost:8080/api/courses/${id}`;
       axios
         .delete(url, { auth: creds })
         .then((res) => {

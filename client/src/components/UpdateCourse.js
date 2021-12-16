@@ -17,7 +17,7 @@ class UpdateCourse extends Component {
   }
 
   getCourses() {
-    axios.get(`http://localhost:5000/api/courses`).then((res) => {
+    axios.get(`http://localhost:8080/api/courses`).then((res) => {
       //set all courses in state
       this.setState({ courses: res.data });
       //set current course in state
@@ -41,7 +41,7 @@ class UpdateCourse extends Component {
     const description = e.target.querySelector("#courseDescription").value;
     const valDiv = document.querySelector(".validation--errors");
     //set url
-    const url = `http://localhost:5000/api/courses/${courseId}`;
+    const url = `http://localhost:8080/api/courses/${courseId}`;
     //request body
     const body = {
       title,

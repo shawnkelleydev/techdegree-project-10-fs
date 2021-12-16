@@ -1,47 +1,37 @@
-import { Link, Navigate } from "react-router-dom";
-import React, { Component } from "react";
+import { Link, Navigate, useParams } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
 
-class UpdateCourse extends Component {
-  state = {
-    courses: [],
-    course: {},
-    submitted: false,
-    errors: [],
+const UpdateCourse = (props) => {
+  let { id } = useParams();
+  id = parseInt(id);
+
+  const [courses, setCourses] = useState();
+  const [course, setCourse] = useState();
+  const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState();
+
+  const getCourses = () => {
+    axios
+      .get(`http://localhost:8080/api/courses`)
+      .then((res) => {
+        setCourses(res.data);
+        const course = courses.filter((course) => course.id === id)[0];
+        setCourse(course);
+      })
+      .catch((err) => console.error);
   };
 
-  //get courses / current course on component mount
-  componentDidMount() {
-    this.getCourses();
-    this.setState({ submitted: false });
-  }
-
-  getCourses() {
-    axios.get(`http://localhost:8080/api/courses`).then((res) => {
-      //set all courses in state
-      this.setState({ courses: res.data });
-      //set current course in state
-      let courseId = window.location.href.split("/").splice(-2)[0];
-      courseId = parseInt(courseId);
-      const course = this.state.courses.filter(
-        (course) => course.id === courseId
-      )[0];
-      this.setState({ course });
-    });
-  }
-
   //update if user match
-  handleUpdate(e) {
+  const handleUpdate = (e) => {
     //prevent page reload
     e.preventDefault();
     //get course id form state
-    // const userId = this.state.course.userId;
-    const courseId = this.state.course.id;
     const title = document.querySelector("#courseTitle").value;
     const description = e.target.querySelector("#courseDescription").value;
     const valDiv = document.querySelector(".validation--errors");
     //set url
-    const url = `http://localhost:8080/api/courses/${courseId}`;
+    const url = `http://localhost:8080/api/courses/${id}`;
     //request body
     const body = {
       title,
@@ -51,117 +41,100 @@ class UpdateCourse extends Component {
     };
     //auth
     const auth = {
-      username: this.props.user.emailAddress,
-      password: this.props.password,
+      username: props.user.emailAddress,
+      password: props.password,
     };
 
     //place request
     axios
       .put(url, body, { auth })
       .then((res) => {
-        //hide validation error div
-        valDiv.style.display = "none";
         //set submitted to true
-        this.setState({ submitted: true });
+        setSubmitted(true);
       })
       .catch((err) => {
         //show validation div
         valDiv.style.display = "block";
         //set errors in state
-        this.setState({ errors: err.response.data.errors });
+        setErrors(err.response.data.errors);
       });
-  }
+  };
 
-  render() {
-    console.log(this.state.errors);
-    if (this.state.submitted) {
-      return <Navigate to={`/courses/${this.state.course.id}`} />;
-    } else {
-      //get course id from url
-      let courseId = window.location.href.split("/").splice(-2)[0];
-      courseId = parseInt(courseId);
-      const course = this.state.courses.filter(
-        (course) => course.id === courseId
-      )[0];
-
-      if (course) {
-        return (
-          <main>
-            <div className="wrap">
-              <h2>Update Course</h2>
-              <div className="validation--errors">
-                <h3>Validation Errors</h3>
-                <ul>
-                  {this.state.errors.length > 0
-                    ? this.state.errors.map((err, i) => <li key={i}>{err}</li>)
+  if (submitted) {
+    return <Navigate to={`/courses/${id}`} />;
+  } else if (!course) {
+    getCourses();
+    return (
+      <main>
+        <h1>loading ... </h1>
+      </main>
+    );
+  } else {
+    return (
+      <main>
+        <div className="wrap">
+          <h2>Update Course</h2>
+          <div className="validation--errors">
+            <h3>Validation Errors</h3>
+            <ul>
+              {errors ? errors.map((err, i) => <li key={i}>{err}</li>) : null}
+            </ul>
+          </div>
+          <form onSubmit={(e) => handleUpdate(e)}>
+            <div className="main--flex">
+              <div>
+                <label htmlFor="courseTitle">Course Title</label>
+                <input
+                  id="courseTitle"
+                  name="courseTitle"
+                  type="text"
+                  defaultValue={course.title}
+                />
+                <p>
+                  {course.user
+                    ? "By" +
+                      " " +
+                      course.user.firstName +
+                      " " +
+                      course.user.lastName
                     : null}
-                </ul>
+                </p>
+                <label htmlFor="courseDescription">Course Description</label>
+                <textarea
+                  id="courseDescription"
+                  name="courseDescription"
+                  defaultValue={course.description}
+                />
               </div>
-              <form onSubmit={(e) => this.handleUpdate(e)}>
-                <div className="main--flex">
-                  <div>
-                    <label htmlFor="courseTitle">Course Title</label>
-                    <input
-                      id="courseTitle"
-                      name="courseTitle"
-                      type="text"
-                      defaultValue={course.title}
-                    />
-                    <p>
-                      {this.state.course.user
-                        ? "By" +
-                          " " +
-                          this.state.course.user.firstName +
-                          " " +
-                          this.state.course.user.lastName
-                        : null}
-                    </p>
-                    <label htmlFor="courseDescription">
-                      Course Description
-                    </label>
-                    <textarea
-                      id="courseDescription"
-                      name="courseDescription"
-                      defaultValue={course.description}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="estimatedTime">Estimated Time</label>
-                    <input
-                      id="estimatedTime"
-                      name="estimatedTime"
-                      type="text"
-                      defaultValue={course.estimatedTime}
-                    />
-                    <label htmlFor="materialsNeeded">Materials Needed</label>
-                    <textarea
-                      id="materialsNeeded"
-                      name="materialsNeeded"
-                      defaultValue={course.materialsNeeded}
-                    />
-                  </div>
-                </div>
-
-                <button className="button" type="submit">
-                  Update Course
-                </button>
-
-                <Link to={`/courses/${courseId}`}>
-                  <button className="button button-secondary">Cancel</button>
-                </Link>
-              </form>
+              <div>
+                <label htmlFor="estimatedTime">Estimated Time</label>
+                <input
+                  id="estimatedTime"
+                  name="estimatedTime"
+                  type="text"
+                  defaultValue={course.estimatedTime}
+                />
+                <label htmlFor="materialsNeeded">Materials Needed</label>
+                <textarea
+                  id="materialsNeeded"
+                  name="materialsNeeded"
+                  defaultValue={course.materialsNeeded}
+                />
+              </div>
             </div>
-          </main>
-        );
-      } else {
-        return (
-          <main>
-            <h1>loading ... </h1>
-          </main>
-        );
-      }
-    }
+
+            <button className="button" type="submit">
+              Update Course
+            </button>
+
+            <Link to={`/courses/${id}`}>
+              <button className="button button-secondary">Cancel</button>
+            </Link>
+          </form>
+        </div>
+      </main>
+    );
   }
-}
+};
 
 export default UpdateCourse;

@@ -19,7 +19,7 @@ const UpdateCourse = (props) => {
         const course = courses.filter((course) => course.id === id)[0];
         setCourse(course);
       })
-      .catch((err) => console.error);
+      .catch((err) => console.error("Man down! ", err));
   };
 
   //update if user match

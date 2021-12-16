@@ -7,6 +7,7 @@ class UpdateCourse extends Component {
     courses: [],
     course: {},
     submitted: false,
+    errors: [],
   };
 
   //get courses / current course on component mount
@@ -31,63 +32,48 @@ class UpdateCourse extends Component {
 
   //update if user match
   handleUpdate(e) {
+    //prevent page reload
     e.preventDefault();
     //get course id form state
-    const userId = this.state.course.userId;
+    // const userId = this.state.course.userId;
     const courseId = this.state.course.id;
     const title = document.querySelector("#courseTitle").value;
     const description = e.target.querySelector("#courseDescription").value;
     const valDiv = document.querySelector(".validation--errors");
+    //set url
+    const url = `http://localhost:5000/api/courses/${courseId}`;
+    //request body
+    const body = {
+      title,
+      description,
+      estimatedTime: e.target.querySelector("#estimatedTime").value,
+      materialsNeeded: e.target.querySelector("#materialsNeeded").value,
+    };
+    //auth
+    const auth = {
+      username: this.props.user.emailAddress,
+      password: this.props.password,
+    };
 
-    //checks for ownership, title, and description
-    if (
-      userId === this.props.user.id &&
-      title.length > 0 &&
-      description.length > 0
-    ) {
-      //set url
-      const url = `http://localhost:5000/api/courses/${courseId}`;
-      //request body
-      const body = {
-        title,
-        description,
-        estimatedTime: e.target.querySelector("#estimatedTime").value,
-        materialsNeeded: e.target.querySelector("#materialsNeeded").value,
-      };
-      //auth
-      const auth = {
-        username: this.props.user.emailAddress,
-        password: this.props.password,
-      };
-
-      //place request
-      axios.put(url, body, { auth }).then((res) => {
-        if (res.status === 204) {
-          //hide validation error div
-          valDiv.style.display = "none";
-          this.setState({ submitted: true });
-        } else {
-          alert(`Man down!  Course did not update.  Error: ${res.status}`);
-        }
+    //place request
+    axios
+      .put(url, body, { auth })
+      .then((res) => {
+        //hide validation error div
+        valDiv.style.display = "none";
+        //set submitted to true
+        this.setState({ submitted: true });
+      })
+      .catch((err) => {
+        //show validation div
+        valDiv.style.display = "block";
+        //set errors in state
+        this.setState({ errors: err.response.data.errors });
       });
-    } else {
-      valDiv.style.display = "block";
-      const errorList = valDiv.querySelector("ul");
-      errorList.innerHTML = "";
-      const errors = [];
-      if (title.length === 0) {
-        errors.push("Please provide a title.");
-      }
-      if (description.length === 0) {
-        errors.push("Please provide a description.");
-      }
-      errors.forEach((error, i) =>
-        errorList.insertAdjacentHTML("beforeend", `<li key=${i}>${error}</li>`)
-      );
-    }
   }
 
   render() {
+    console.log(this.state.errors);
     if (this.state.submitted) {
       return <Navigate to={`/courses/${this.state.course.id}`} />;
     } else {
@@ -105,7 +91,11 @@ class UpdateCourse extends Component {
               <h2>Update Course</h2>
               <div className="validation--errors">
                 <h3>Validation Errors</h3>
-                <ul></ul>
+                <ul>
+                  {this.state.errors.length > 0
+                    ? this.state.errors.map((err, i) => <li key={i}>{err}</li>)
+                    : null}
+                </ul>
               </div>
               <form onSubmit={(e) => this.handleUpdate(e)}>
                 <div className="main--flex">

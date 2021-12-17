@@ -1,5 +1,5 @@
 import { Link, Navigate, useParams } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const UpdateCourse = (props) => {
@@ -14,19 +14,25 @@ const UpdateCourse = (props) => {
   const [errors, setErrors] = useState();
 
   //api call
-  const getCourses = () => {
-    axios
-      .get(`http://localhost:8080/api/courses`)
-      .then((res) => {
-        setCourses(res.data);
-        //checks for courses before filter (was getting errors without condition)
-        if (courses) {
-          const course = courses.filter((course) => course.id === id)[0];
-          setCourse(course);
-        }
-      })
-      .catch((err) => console.error("Man down! ", err));
-  };
+
+  useEffect(() => {
+    const getCourses = () => {
+      axios
+        .get(`http://localhost:8080/api/courses`)
+        .then((res) => {
+          setCourses(res.data);
+          //checks for courses before filter (was getting errors without condition)
+          if (courses) {
+            const course = courses.filter((course) => course.id === id)[0];
+            setCourse(course);
+          }
+        })
+        .catch((err) => console.error("Man down! ", err));
+    };
+    if (!course) {
+      getCourses();
+    }
+  }, [id, courses, course]);
 
   //update if user match
   const handleUpdate = (e) => {
@@ -66,10 +72,11 @@ const UpdateCourse = (props) => {
   if (submitted) {
     return <Navigate to={`/courses/${id}`} />;
   } else if (!course) {
-    getCourses();
     return (
       <main>
-        <h1>loading ... </h1>
+        <div className="wrap">
+          <h1>loading ... </h1>
+        </div>
       </main>
     );
   } else {
@@ -77,6 +84,7 @@ const UpdateCourse = (props) => {
       <main>
         <div className="wrap">
           <h2>Update Course</h2>
+          {/* conditionally renders validation div */}
           {errors ? (
             <div className="validation--errors">
               <h3>Validation Errors</h3>

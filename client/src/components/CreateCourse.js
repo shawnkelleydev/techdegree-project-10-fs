@@ -5,6 +5,7 @@ import axios from "axios";
 class CreateCourse extends Component {
   state = {
     submitted: false,
+    errors: null,
   };
 
   componentDidMount() {
@@ -33,33 +34,14 @@ class CreateCourse extends Component {
         username,
         password,
       };
-
-      const valDiv = document.querySelector(".validation--errors");
-      const errorList = valDiv.querySelector("ul");
-      errorList.innerHTML = "";
       axios
         .post(url, body, { auth })
         .then((res) => {
-          valDiv.style.display = "none";
-          this.setState({ submitted: true });
+          this.setState({ submitted: true, errors: null });
         })
         .catch((err) => {
-          valDiv.style.display = "block";
-
           const errors = err.response.data.errors;
-          if (errors) {
-            errors.forEach((error, i) => {
-              errorList.insertAdjacentHTML(
-                "beforeend",
-                `<li key=${i}>${error}</li>`
-              );
-            });
-          } else {
-            errorList.insertAdjacentHTML(
-              "beforeend",
-              `<li>${err.response.data.message}</li>`
-            );
-          }
+          this.setState({ errors });
         });
     } else {
       alert("Please log in to add courses.");
@@ -67,6 +49,7 @@ class CreateCourse extends Component {
   }
 
   render() {
+    const errors = this.state.errors;
     if (this.state.submitted) {
       return <Navigate to="/" />;
     } else {
@@ -74,10 +57,17 @@ class CreateCourse extends Component {
         <main>
           <div className="wrap">
             <h2>Create Course</h2>
-            <div className="validation--errors">
-              <h3>Validation Errors</h3>
-              <ul></ul>
-            </div>
+            {errors ? (
+              <div className="validation--errors">
+                <h3>Validation Errors</h3>
+                <ul>
+                  {errors.map((error, i) => (
+                    <li key={i}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
             <form
               onSubmit={(e) => {
                 this.handleCreateCourse(e);

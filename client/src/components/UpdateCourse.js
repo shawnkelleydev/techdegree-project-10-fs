@@ -3,21 +3,27 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const UpdateCourse = (props) => {
+  //grab id from url
   let { id } = useParams();
   id = parseInt(id);
 
+  //hooks for state
   const [courses, setCourses] = useState();
   const [course, setCourse] = useState();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState();
 
+  //api call
   const getCourses = () => {
     axios
       .get(`http://localhost:8080/api/courses`)
       .then((res) => {
         setCourses(res.data);
-        const course = courses.filter((course) => course.id === id)[0];
-        setCourse(course);
+        //checks for courses before filter (was getting errors without condition)
+        if (courses) {
+          const course = courses.filter((course) => course.id === id)[0];
+          setCourse(course);
+        }
       })
       .catch((err) => console.error("Man down! ", err));
   };

@@ -30,6 +30,7 @@ class App extends Component {
   their own api calls / state.
   
   */
+
   componentDidMount() {
     const username = localStorage.getItem("username");
     const password = localStorage.getItem("password");
@@ -53,7 +54,7 @@ class App extends Component {
 
   //Posts new users to the api.
 
-  handleNewUser(e) {
+  signUp(e) {
     e.preventDefault();
     let success = false;
     const firstName = e.target.querySelector("#firstName").value;
@@ -172,7 +173,7 @@ class App extends Component {
             path="signup"
             element={
               <UserSignUp
-                submit={(e) => this.handleNewUser(e)}
+                submit={(e) => this.signUp(e)}
                 errors={this.state.errors}
               />
             }

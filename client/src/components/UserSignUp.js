@@ -11,6 +11,7 @@ class UserSignUp extends Component {
   }
 
   render() {
+    const errors = this.props.errors;
     if (this.state.submitted) {
       return <Navigate to="/" />;
     } else {
@@ -18,10 +19,17 @@ class UserSignUp extends Component {
         <main>
           <div className="form--centered">
             <h2>Sign Up</h2>
-            <div className="validation--errors">
-              <h3>Validation Errors</h3>
-              <ul></ul>
-            </div>
+            {errors ? (
+              <div className="validation--errors">
+                <h3>Validation Errors</h3>
+                <ul>
+                  {errors.map((error, i) => (
+                    <li key={i}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
             <form
               onSubmit={(e) => {
                 if (this.props.submit(e)) {

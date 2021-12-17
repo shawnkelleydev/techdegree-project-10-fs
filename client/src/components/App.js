@@ -21,6 +21,7 @@ class App extends Component {
     password: "",
     signOut: () => this.signOut(),
     signIn: () => this.signIn(),
+    errors: null,
   };
 
   /*
@@ -66,23 +67,15 @@ class App extends Component {
       password,
     };
     const url = "http://localhost:8080/api/users";
-    const valDiv = document.querySelector(".validation--errors");
-    const valList = valDiv.querySelector("ul");
-    valList.innerHTML = "";
     axios
       .post(url, data)
       .then((res) => {
-        valDiv.style.display = "none";
-        this.setState({ user: data, password });
+        this.setState({ user: data, password, errors: null });
         success = true;
       })
       .catch((err) => {
-        valDiv.style.display = "block";
-
         const errors = err.response.data.errors;
-        errors.forEach((error, i) => {
-          valList.insertAdjacentHTML("beforeend", `<li key=${i}>${error}</li>`);
-        });
+        this.setState({ errors });
       });
     return success;
   }
@@ -177,7 +170,12 @@ class App extends Component {
           />
           <Route
             path="signup"
-            element={<UserSignUp submit={(e) => this.handleNewUser(e)} />}
+            element={
+              <UserSignUp
+                submit={(e) => this.handleNewUser(e)}
+                errors={this.state.errors}
+              />
+            }
           />
           <Route
             path="signout"

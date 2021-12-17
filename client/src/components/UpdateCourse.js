@@ -16,23 +16,32 @@ const UpdateCourse = (props) => {
   //api call
 
   useEffect(() => {
-    const getCourses = () => {
-      axios
-        .get(`http://localhost:8080/api/courses`)
-        .then((res) => {
-          setCourses(res.data);
-          //checks for courses before filter (was getting errors without condition)
-          if (courses) {
-            const course = courses.filter((course) => course.id === id)[0];
-            setCourse(course);
-          }
-        })
-        .catch((err) => console.error("Man down! ", err));
-    };
-    if (!course) {
-      getCourses();
+    console.log("get");
+    // const getCourses = () => {
+    axios
+      .get(`http://localhost:8080/api/courses`)
+      .then((res) => {
+        setCourses(res.data);
+        //checks for courses before filter (was getting errors without condition)
+        // if (courses) {
+        //   const course = courses.filter((course) => course.id === id)[0];
+        //   setCourse(course);
+        // }
+      })
+      .catch((err) => console.error("Man down! ", err));
+    // };
+    // if (!course) {
+    //   getCourses();
+    // }
+  }, [id]);
+
+  useEffect(() => {
+    console.log("course");
+    if (courses) {
+      const course = courses.filter((course) => course.id === id)[0];
+      setCourse(course);
     }
-  }, [id, courses, course]);
+  }, [courses]);
 
   //update if user match
   const handleUpdate = (e) => {
